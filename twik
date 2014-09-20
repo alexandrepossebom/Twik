@@ -1,7 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8; -*-
 """
-Copyright 2014  Alexandre Possebom alexandrepossebom@gmail.com
+* Copyright 2014 Alexandre Possebom
+* Copyright 2014 Red Dye No. 2
+* Copyright (C) 2011-2013 TG Byte Software GmbH
+* Copyright (C) 2009-2011 Thilo-Alexander Ginkel.
+* Copyright (C) 2010-2014 Eric Woodruff
+* Copyright (C) 2006-2010 Steve Cooper
 
 This file is part of twik.
 
