@@ -51,6 +51,27 @@ def injectCharacter( input, offset, reserved, seed, length, cStart, cNum ):
     tail = input[pos+1:] if (pos + 1 < len(input)) else input
     return head + chr(inject) + tail
 
+def generateHash(tag,key,length):
+    digest = hmac.new(key,tag,sha1).digest();
+    hash = digest.encode('base64')[:-2]
+
+    seed = 0
+    for i in range(0, len( hash )):
+        seed +=  ord(hash[i])
+
+    hash = injectCharacter(hash, 0, 4, seed, length, '0', 10)
+    hash = injectCharacter(hash, 1, 4, seed, length, '!', 15)
+    hash = injectCharacter(hash, 2, 4, seed, length, 'A', 26)
+    hash = injectCharacter(hash, 3, 4, seed, length, 'a', 26)
+
+    return hash[:length]
+
+
+def getPassword(tag,private_key,master_key,length):
+    tag = generateHash(private_key,tag,24)
+    password = generateHash(tag,master_key,length)
+    print "Your password is %s" % password 
+
 def main(argv):
     tag = ''
     chars = 12
@@ -69,24 +90,7 @@ def main(argv):
     
     private_key = readConfig()
     master_key = getpass.getpass()
-    h1 = hmac.new(tag,private_key,sha1).digest();
-    dig = h1.encode('base64')[:24]
-    h = hmac.new(master_key,dig,sha1).digest();
-    hash = h.encode('base64')[:-2]
-
-    seed = 0
-    for i in range(0, len( hash )):
-        seed +=  ord(hash[i])
-
-    hash = injectCharacter(hash, 0, 4, seed, chars, '0', 10)
-    hash = injectCharacter(hash, 1, 4, seed, chars, '!', 15)
-    hash = injectCharacter(hash, 2, 4, seed, chars, 'A', 26)
-    hash = injectCharacter(hash, 3, 4, seed, chars, 'a', 26)
-
-    print "%s" % hash[:12]
-
-
-
+    getPassword(tag,private_key,master_key,chars)
 
 if __name__ == "__main__":
     main(sys.argv[1:])
