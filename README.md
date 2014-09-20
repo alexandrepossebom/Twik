@@ -3,17 +3,15 @@ Twik
 
 Python version of Twik
 
-Only support Alphanumeric and Special Chars
+Usage: twik [-h] [-c C] [-p {1,2,3}] tag
 
+positional arguments:
+  tag         generate password for a specified tag
 
-
-Usage : twik -c 12 -t reddit
-
--c is length
--t is tag
-
+  optional arguments:
+    -h, --help  show this help message and exit
+    -c C        length of generated password
+    -p {1,2,3}  1 for ALPHANUMERIC_AND_SPECIAL_CHAR, 2 for ALPHANUMERIC and 3for NUMERIC
 
 * TODO
-* Better command line options support
-* Add support for anothers password types
-
+* Only ALPHANUMERIC_AND_SPECIAL_CHAR password type is working
