@@ -1,0 +1,95 @@
+#!/usr/bin/env python
+from hashlib import sha1
+from random import SystemRandom
+import hmac
+import hashlib
+import getpass
+import ConfigParser
+import sys, getopt
+import os.path
+
+def privateKeyGenerator():
+    SUBGROUPS_LENGTH = [8, 4, 4, 4, 12]
+    SUBGROUP_SEPARATOR = '-'
+    ALLOWED_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+    sr = SystemRandom()
+    allowedCharsLength = len(ALLOWED_CHARS)
+    key = ""
+    for i in range(0,len(SUBGROUPS_LENGTH)):
+        for j in range(0,SUBGROUPS_LENGTH[i]):
+                key += ALLOWED_CHARS[sr.randrange(allowedCharsLength)]
+        if i < (len(SUBGROUPS_LENGTH) -1):
+            key += SUBGROUP_SEPARATOR
+    return key
+
+def readConfig():
+    private_key = ''
+    homedir = os.path.expanduser('~')
+    config_file = os.path.join(homedir, '.twik.conf')
+    config = ConfigParser.ConfigParser()
+    config.read(config_file)
+    if not config.has_option('Profile', 'private_key'):
+        config.add_section('Profile')
+        private_key = privateKeyGenerator()
+        config.set('Profile', 'private_key', private_key)
+        with open(config_file, 'w+') as fp:
+            config.write(fp)
+    else:
+        private_key = config.get('Profile', 'private_key')
+    return private_key
+
+def injectCharacter( input, offset, reserved, seed, length, cStart, cNum ):
+    pos0 = seed % length
+    pos = (pos0 + offset) % length
+    for i in range(0, length - reserved):
+        i2 = (pos0 + reserved + i) % length;
+        c = ord(input[i2]);
+        if (c >= cStart or c < ord(cStart) + cNum):
+            return input;
+    head = input[:pos] if pos > 0 else ""
+    inject = ((seed + ord(input[pos])) % cNum) + ord(cStart)
+    tail = input[pos+1:] if (pos + 1 < len(input)) else input
+    return head + chr(inject) + tail
+
+def main(argv):
+    tag = ''
+    chars = 12
+
+    try:
+        opts, args = getopt.getopt(argv, 'c:ht:h', ['chars=', 'tag=', 'help'])
+    except getopt.GetoptError:
+        print "you neeed tag option"
+        sys.exit(2)
+
+    for opt, arg in opts:
+        if opt in ('-c', '--chars'):
+            chars = int(arg)
+        elif opt in ('-t', '--tag'):
+            tag = arg
+    
+    private_key = readConfig()
+    master_key = getpass.getpass()
+    h1 = hmac.new(tag,private_key,sha1).digest();
+    dig = h1.encode('base64')[:24]
+    h = hmac.new(master_key,dig,sha1).digest();
+    hash = h.encode('base64')[:-2]
+
+    seed = 0
+    for i in range(0, len( hash )):
+        seed +=  ord(hash[i])
+
+    hash = injectCharacter(hash, 0, 4, seed, chars, '0', 10)
+    hash = injectCharacter(hash, 1, 4, seed, chars, '!', 15)
+    hash = injectCharacter(hash, 2, 4, seed, chars, 'A', 26)
+    hash = injectCharacter(hash, 3, 4, seed, chars, 'a', 26)
+
+    print "%s" % hash[:12]
+
+
+
+
+if __name__ == "__main__":
+    main(sys.argv[1:])
+
+
+# vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4
