@@ -32,6 +32,12 @@ import getpass
 import ConfigParser
 import sys, getopt
 import os.path
+import argparse
+
+def enum(**enums):
+        return type('Enum', (), enums)
+
+PasswordType = enum(ALPHANUMERIC_AND_SPECIAL_CHARS=1, ALPHANUMERIC=2, NUMERIC=3)
 
 def privateKeyGenerator():
     SUBGROUPS_LENGTH = [8, 4, 4, 4, 12]
@@ -76,7 +82,7 @@ def injectCharacter( input, offset, reserved, seed, length, cStart, cNum ):
     tail = input[pos+1:] if (pos + 1 < len(input)) else input
     return head + chr(inject) + tail
 
-def generateHash(tag,key,length):
+def generateHash(tag,key,length,password_type):
     digest = hmac.new(key,tag,sha1).digest();
     hash = digest.encode('base64')[:-2]
 
@@ -85,39 +91,33 @@ def generateHash(tag,key,length):
         seed +=  ord(hash[i])
 
     hash = injectCharacter(hash, 0, 4, seed, length, '0', 10)
-    hash = injectCharacter(hash, 1, 4, seed, length, '!', 15)
+
+    if password_type == PasswordType.ALPHANUMERIC_AND_SPECIAL_CHARS:
+        hash = injectCharacter(hash, 1, 4, seed, length, '!', 15)
+
     hash = injectCharacter(hash, 2, 4, seed, length, 'A', 26)
     hash = injectCharacter(hash, 3, 4, seed, length, 'a', 26)
 
     return hash[:length]
 
 
-def getPassword(tag,private_key,master_key,length):
-    tag = generateHash(private_key,tag,24)
-    password = generateHash(tag,master_key,length)
+def getPassword(tag,private_key,master_key,length,password_type):
+    tag = generateHash(private_key,tag,24,1)
+    password = generateHash(tag,master_key,length,password_type)
     print "Your password is %s" % password 
 
-def main(argv):
-    tag = ''
-    chars = 12
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("tag", type=str,
+                                help="generate password for a specified tag")
+    parser.add_argument("-c", type=int,default=12,
+            help="length of generated password")
+    parser.add_argument("-p", type=int, choices=[1, 2, 3], default=1,
+                                help="1 for ALPHANUMERIC_AND_SPECIAL_CHAR, 2 for ALPHANUMERIC and 3 for NUMERIC")
+    args = parser.parse_args()
 
-    try:
-        opts, args = getopt.getopt(argv, 'c:ht:h', ['chars=', 'tag=', 'help'])
-    except getopt.GetoptError:
-        print "you neeed tag option"
-        sys.exit(2)
-
-    for opt, arg in opts:
-        if opt in ('-c', '--chars'):
-            chars = int(arg)
-        elif opt in ('-t', '--tag'):
-            tag = arg
-    
     private_key = readConfig()
     master_key = getpass.getpass()
-    getPassword(tag,private_key,master_key,chars)
-
-if __name__ == "__main__":
-    main(sys.argv[1:])
+    getPassword(args.tag,private_key,master_key,args.c,args.p)
 
 # vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4
