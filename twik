@@ -82,6 +82,16 @@ def injectCharacter( input, offset, reserved, seed, length, cStart, cNum ):
     tail = input[pos+1:] if (pos + 1 < len(input)) else input
     return head + chr(inject) + tail
 
+
+def removeSpecialCharacters(hash,seed,length):
+    inputChars = list(hash)
+    pivot = 0
+    for i in range(0,len(inputChars)):
+        if not inputChars[i].isdigit() and not inputChars[i].isalpha():
+            inputChars[i] = chr(((seed + pivot) % 26 + ord('A')))
+            pivot = i + 1
+    return "".join(inputChars)
+
 def generateHash(tag,key,length,password_type):
     digest = hmac.new(key,tag,sha1).digest();
     hash = digest.encode('base64')[:-2]
@@ -94,6 +104,9 @@ def generateHash(tag,key,length,password_type):
 
     if password_type == PasswordType.ALPHANUMERIC_AND_SPECIAL_CHARS:
         hash = injectCharacter(hash, 1, 4, seed, length, '!', 15)
+
+    if password_type == PasswordType.ALPHANUMERIC:
+        hash = removeSpecialCharacters(hash, seed, length);
 
     hash = injectCharacter(hash, 2, 4, seed, length, 'A', 26)
     hash = injectCharacter(hash, 3, 4, seed, length, 'a', 26)
