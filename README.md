@@ -3,6 +3,9 @@ Twik
 
 Python version of Twik
 
+
+```
+
 Usage: twik [-h] [-c C] [-p {1,2,3}] tag
 
 positional arguments:
@@ -13,9 +16,12 @@ positional arguments:
     -c C        length of generated password
     -p {1,2,3}  1 for ALPHANUMERIC_AND_SPECIAL_CHAR, 2 for ALPHANUMERIC and 3 for NUMERIC
 
+```
+
 Private Key is stored in ~/twik.conf you need change it to match with chrome extension and android app:
 
+```
 [Profile]
 private_key = TFCY2AJI-NBPU-V01E-F7CP-PJIZNRKPF25W
-
+```
 
