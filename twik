@@ -86,9 +86,18 @@ def injectCharacter( input, offset, reserved, seed, length, cStart, cNum ):
 def removeSpecialCharacters(hash,seed,length):
     inputChars = list(hash)
     pivot = 0
-    for i in range(0,len(inputChars)):
+    for i in range(0,length):
         if not inputChars[i].isdigit() and not inputChars[i].isalpha():
             inputChars[i] = chr(((seed + pivot) % 26 + ord('A')))
+            pivot = i + 1
+    return "".join(inputChars)
+
+def convertToDigits(hash,seed,length):
+    inputChars = list(hash)
+    pivot = 0
+    for i in range(0,length):
+        if not inputChars[i].isdigit():
+            inputChars[i] = chr(((seed + ord(inputChars[pivot])) % 10 + ord('0')))
             pivot = i + 1
     return "".join(inputChars)
 
@@ -100,16 +109,17 @@ def generateHash(tag,key,length,password_type):
     for i in range(0, len( hash )):
         seed +=  ord(hash[i])
 
-    hash = injectCharacter(hash, 0, 4, seed, length, '0', 10)
+    if password_type == PasswordType.NUMERIC:
+        hash = convertToDigits(hash, seed, length)
+    else:
+        hash = injectCharacter(hash, 0, 4, seed, length, '0', 10)
+        if password_type == PasswordType.ALPHANUMERIC_AND_SPECIAL_CHARS:
+            hash = injectCharacter(hash, 1, 4, seed, length, '!', 15)
+        hash = injectCharacter(hash, 2, 4, seed, length, 'A', 26)
+        hash = injectCharacter(hash, 3, 4, seed, length, 'a', 26)
 
-    if password_type == PasswordType.ALPHANUMERIC_AND_SPECIAL_CHARS:
-        hash = injectCharacter(hash, 1, 4, seed, length, '!', 15)
-
-    if password_type == PasswordType.ALPHANUMERIC:
-        hash = removeSpecialCharacters(hash, seed, length);
-
-    hash = injectCharacter(hash, 2, 4, seed, length, 'A', 26)
-    hash = injectCharacter(hash, 3, 4, seed, length, 'a', 26)
+        if password_type == PasswordType.ALPHANUMERIC:
+            hash = removeSpecialCharacters(hash, seed, length);
 
     return hash[:length]
 
