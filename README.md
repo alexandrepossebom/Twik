@@ -4,8 +4,14 @@ Twik
 Python version of Twik
 
 
+For install :
+
+```
+python setup.py install
+
 ```
 
+```
 Usage: twik [-h] [-c C] [-p {1,2,3}] tag
 
 positional arguments:
@@ -14,7 +20,8 @@ positional arguments:
   optional arguments:
     -h, --help  show this help message and exit
     -c C        length of generated password
-    -p {1,2,3}  1 for ALPHANUMERIC_AND_SPECIAL_CHAR, 2 for ALPHANUMERIC and 3 for NUMERIC
+    -p {1,2,3}  1 for ALPHANUMERIC_AND_SPECIAL_CHAR, 2 for ALPHANUMERIC
+                and 3 for NUMERIC
 
 ```
 
