@@ -71,7 +71,7 @@ def injectcharacter(input, offset, reserved, seed, length, cStart, cNum):
     for i in range(0, length - reserved):
         i2 = (pos0 + reserved + i) % length
         c = ord(input[i2])
-        if c >= cStart or c < ord(cStart) + cNum:
+        if c >= ord(cStart) and c < ord(cStart) + cNum:
             return input
     head = input[:pos] if pos > 0 else ""
     inject = ((seed + ord(input[pos])) % cNum) + ord(cStart)
