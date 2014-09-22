@@ -126,7 +126,7 @@ def getpassword(tag, private_key, master_key, length, password_type):
     password = generatehash(hash, master_key, length, password_type)
     print "Your password is %s" % password
 
-if __name__ == "__main__":
+def main():
     global PasswordType
     PasswordType = enum(ALPHANUMERIC_AND_SPECIAL_CHARS=1, ALPHANUMERIC=2,
      NUMERIC=3)
