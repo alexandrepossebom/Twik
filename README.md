@@ -4,9 +4,23 @@ Twik
 Python version of Twik
 
 
-For install :
+## Installation instructions:
+  * Using PIP
+  
+```pip install twik```
 
-```python setup.py install```
+  * Using easy_install
+  
+```easy_install twik```
+
+  * Manual
+```
+git clone https://github.com/coxande/Twik.git
+cd Twik
+python setup.py install
+```
+
+## Usage instructions :
 
 ```
 Usage: twik [-h] [-c C] [-p {1,2,3}] tag
