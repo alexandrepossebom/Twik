@@ -32,6 +32,7 @@ import ConfigParser
 import os.path
 import argparse
 
+
 def enum(**enums):
     return type('Enum', (), enums)
 
@@ -59,77 +60,77 @@ def readprivatekey():
         config.add_section('Profile')
         private_key = privatekeygenerator()
         config.set('Profile', 'private_key', private_key)
-        with open(config_file, 'w+') as fp:
-            config.write(fp)
+        with open(config_file, 'w+') as fileconfig:
+            config.write(fileconfig)
     else:
         private_key = config.get('Profile', 'private_key')
     return private_key
 
-def injectcharacter(input, offset, reserved, seed, length, cStart, cNum):
+def injectcharacter(mhash, offset, reserved, seed, length, cstart, cnum):
     pos0 = seed % length
     pos = (pos0 + offset) % length
     for i in range(0, length - reserved):
-        i2 = (pos0 + reserved + i) % length
-        c = ord(input[i2])
-        if c >= ord(cStart) and c < ord(cStart) + cNum:
-            return input
-    head = input[:pos] if pos > 0 else ""
-    inject = ((seed + ord(input[pos])) % cNum) + ord(cStart)
-    tail = input[pos+1:] if (pos + 1 < len(input)) else input
+        tmp = (pos0 + reserved + i) % length
+        char = ord(mhash[tmp])
+        if char >= ord(cstart) and char < ord(cstart) + cnum:
+            return mhash
+    head = mhash[:pos] if pos > 0 else ""
+    inject = ((seed + ord(mhash[pos])) % cnum) + ord(cstart)
+    tail = mhash[pos+1:] if (pos + 1 < len(mhash)) else mhash
     return head + chr(inject) + tail
 
 
-def removespecialcharacters(hash, seed, length):
-    inputChars = list(hash)
+def removespecialcharacters(mhash, seed, length):
+    inputchars = list(mhash)
     pivot = 0
     for i in range(0, length):
-        if not inputChars[i].isdigit() and not inputChars[i].isalpha():
-            inputChars[i] = chr(((seed + pivot) % 26 + ord('A')))
+        if not inputchars[i].isdigit() and not inputchars[i].isalpha():
+            inputchars[i] = chr(((seed + pivot) % 26 + ord('A')))
             pivot = i + 1
-    return "".join(inputChars)
+    return "".join(inputchars)
 
-def converttodigits(hash, seed, length):
-    inputChars = list(hash)
+def converttodigits(mhash, seed, length):
+    inputchars = list(mhash)
     pivot = 0
     for i in range(0, length):
-        if not inputChars[i].isdigit():
-            inputChars[i] = chr(((seed + ord(inputChars[pivot])) % 10 +
+        if not inputchars[i].isdigit():
+            inputchars[i] = chr(((seed + ord(inputchars[pivot])) % 10 +
                 ord('0')))
             pivot = i + 1
-    return "".join(inputChars)
+    return "".join(inputchars)
 
 def generatehash(tag, key, length, password_type):
     digest = hmac.new(key, tag, sha1).digest()
-    hash = digest.encode('base64')[:-2]
+    mhash = digest.encode('base64')[:-2]
 
     seed = 0
-    for i in range(0, len(hash)):
-        seed += ord(hash[i])
+    for i in range(0, len(mhash)):
+        seed += ord(mhash[i])
 
-    if password_type == PasswordType.NUMERIC:
-        hash = converttodigits(hash, seed, length)
+    if password_type == PASSWORDTYPE.NUMERIC:
+        mhash = converttodigits(mhash, seed, length)
     else:
-        hash = injectcharacter(hash, 0, 4, seed, length, '0', 10)
-        if password_type == PasswordType.ALPHANUMERIC_AND_SPECIAL_CHARS:
-            hash = injectcharacter(hash, 1, 4, seed, length, '!', 15)
-        hash = injectcharacter(hash, 2, 4, seed, length, 'A', 26)
-        hash = injectcharacter(hash, 3, 4, seed, length, 'a', 26)
+        mhash = injectcharacter(mhash, 0, 4, seed, length, '0', 10)
+        if password_type == PASSWORDTYPE.ALPHANUMERIC_AND_SPECIAL_CHARS:
+            mhash = injectcharacter(mhash, 1, 4, seed, length, '!', 15)
+        mhash = injectcharacter(mhash, 2, 4, seed, length, 'A', 26)
+        mhash = injectcharacter(mhash, 3, 4, seed, length, 'a', 26)
 
-        if password_type == PasswordType.ALPHANUMERIC:
-            hash = removespecialcharacters(hash, seed, length)
+        if password_type == PASSWORDTYPE.ALPHANUMERIC:
+            mhash = removespecialcharacters(mhash, seed, length)
 
-    return hash[:length]
+    return mhash[:length]
 
 
 def getpassword(tag, private_key, master_key, length, password_type):
-    hash = generatehash(private_key, tag, 24, 1)
-    password = generatehash(hash, master_key, length, password_type)
+    mhash = generatehash(private_key, tag, 24, 1)
+    password = generatehash(mhash, master_key, length, password_type)
     print "Your password is %s" % password
 
 def main():
-    global PasswordType
-    PasswordType = enum(ALPHANUMERIC_AND_SPECIAL_CHARS=1, ALPHANUMERIC=2,
-     NUMERIC=3)
+    global PASSWORDTYPE
+    PASSWORDTYPE = enum(ALPHANUMERIC_AND_SPECIAL_CHARS=1, ALPHANUMERIC=2,
+        NUMERIC=3)
     parser = argparse.ArgumentParser()
     parser.add_argument("tag", type=str,
         help="generate password for a specified tag")
@@ -140,7 +141,9 @@ def main():
     args = parser.parse_args()
 
     private_key = readprivatekey()
-    master_key = getpass.getpass()
+    master_key = getpass.getpass(prompt='Master Key: ')
     getpassword(args.tag, private_key, master_key, args.c, args.p)
 
+if __name__ == "__main__":
+    main()
 # vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4
