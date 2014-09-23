@@ -22,23 +22,38 @@ python setup.py install
 
 ## Usage instructions :
 
+
 ```
-Usage: twik [-h] [-c C] [-p {1,2,3}] tag
+usage: twik [-h] [-c CHARS] [-p PROFILE] [-t {1,2,3}] tag
 
 positional arguments:
-  tag         generate password for a specified tag
+  tag                   generate password for a specified tag
 
-  optional arguments:
-    -h, --help  show this help message and exit
-    -c C        length of generated password
-    -p {1,2,3}  1 for ALPHANUMERIC_AND_SPECIAL_CHAR, 2 for ALPHANUMERIC
-                and 3 for NUMERIC
+optional arguments:
+  -h, --help            show this help message and exit
+  -c CHARS, --chars CHARS
+                        length of generated password. Default: 12
+  -p PROFILE, --profile PROFILE
+                        profile to use. Default:'Profile'
+  -t {1,2,3}, --passwordtype {1,2,3}
+                        1 for ALPHANUMERIC_AND_SPECIAL_CHAR
+                        2 for ALPHANUMERIC
+                        3 for NUMERIC Default: 1
+
+
 ```
 
-Private Key is stored in ~/.twik.conf you need change it to match with chrome extension and android app:
+Private Keys is stored in ~/.twik.conf you need change it to match with chrome extension and android app:
 
 ```
 [Profile]
 private_key = TFCY2AJI-NBPU-V01E-F7CP-PJIZNRKPF25W
+github_chars = 12
+github_password_type = 1
+
+[lala]
+private_key = VBHF4HAR-8M5Z-NK3B-KQWH-KG9ZYLER4916
+reddit_chars = 22
+reddit_password_type = 2
 ```
 
