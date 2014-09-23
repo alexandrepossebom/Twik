@@ -35,7 +35,7 @@ positional arguments:
                 and 3 for NUMERIC
 ```
 
-Private Key is stored in ~/twik.conf you need change it to match with chrome extension and android app:
+Private Key is stored in ~/.twik.conf you need change it to match with chrome extension and android app:
 
 ```
 [Profile]
