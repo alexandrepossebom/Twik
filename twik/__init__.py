@@ -25,46 +25,13 @@ along with Twik.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 from hashlib import sha1
-from random import SystemRandom
+from util import Util
 import hmac
 import getpass
-import ConfigParser
-import os.path
 import argparse
-
 
 def enum(**enums):
     return type('Enum', (), enums)
-
-def privatekeygenerator():
-    subgroups_length = [8, 4, 4, 4, 12]
-    subgroup_separator = '-'
-    allowed_chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-    systemrandom = SystemRandom()
-    allowedcharslength = len(allowed_chars)
-    key = ""
-    for i in range(0, len(subgroups_length)):
-        for j in range(0, subgroups_length[i]):
-            key += allowed_chars[systemrandom.randrange(allowedcharslength)]
-        if i < (len(subgroups_length) -1):
-            key += subgroup_separator
-    return key
-
-def readprivatekey():
-    private_key = ''
-    homedir = os.path.expanduser('~')
-    config_file = os.path.join(homedir, '.twik.conf')
-    config = ConfigParser.ConfigParser()
-    config.read(config_file)
-    if not config.has_option('Profile', 'private_key'):
-        config.add_section('Profile')
-        private_key = privatekeygenerator()
-        config.set('Profile', 'private_key', private_key)
-        with open(config_file, 'w+') as fileconfig:
-            config.write(fileconfig)
-    else:
-        private_key = config.get('Profile', 'private_key')
-    return private_key
 
 def injectcharacter(mhash, offset, reserved, seed, length, cstart, cnum):
     pos0 = seed % length
@@ -133,17 +100,29 @@ def main():
         NUMERIC=3)
     parser = argparse.ArgumentParser()
     parser.add_argument("tag", type=str,
-        help="generate password for a specified tag")
-    parser.add_argument("-c", type=int, default=12,
-        help="length of generated password")
-    parser.add_argument("-p", type=int, choices=[1, 2, 3], default=1,
-        help="1 for ALPHANUMERIC_AND_SPECIAL_CHAR, 2 for ALPHANUMERIC and 3 for NUMERIC")
+            help="generate password for a specified tag")
+    parser.add_argument("-c", "--chars", type=int, default=-1,
+            help="length of generated password. Default: 12")
+    parser.add_argument("-p", "--profile", type=str, default='Profile',
+            help="profile to use. Default:'Profile'")
+    parser.add_argument("-t", "--passwordtype", type=int, choices=[1, 2, 3],
+            default=-1,
+            help='''
+            1 for ALPHANUMERIC_AND_SPECIAL_CHAR
+            2 for ALPHANUMERIC
+            3 for NUMERIC
+            Default: 1
+            ''')
     args = parser.parse_args()
 
-    private_key = readprivatekey()
+    util = Util(args.tag, args.chars, args.passwordtype, args.profile)
+
     master_key = getpass.getpass(prompt='Master Key: ')
-    getpassword(args.tag, private_key, master_key, args.c, args.p)
+
+    getpassword(args.tag, util.get_privatekey(), master_key,
+            util.get_chars(), util.get_passord_type())
 
 if __name__ == "__main__":
     main()
+
 # vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4
