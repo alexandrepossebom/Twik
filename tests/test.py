@@ -1,7 +1,7 @@
 import unittest
 from twik import twik
 
-class SimplisticTest(unittest.TestCase):
+class SimpleTest(unittest.TestCase):
     def setUp(self):
         self.t = twik.Twik()
 
