@@ -61,6 +61,8 @@ class Util(object):
         self.chars = chars
         self.profile = profile
         self.pass_type = pass_type
+        #Initialize default values
+        self.get_privatekey()
 
     def writeconfig(self):
         """
@@ -80,6 +82,14 @@ class Util(object):
             private_key = privatekeygenerator()
             self.config.add_section(self.profile)
             self.config.set(self.profile, 'private_key', private_key)
+            chars = self.chars
+            if chars == None:
+                chars = 12
+            pass_type = self.pass_type
+            if pass_type == None:
+                pass_type = 1
+            self.config.set(self.profile, 'chars', chars)
+            self.config.set(self.profile, 'password_type', pass_type)
             self.writeconfig()
             print 'New profile is generated'
         return private_key
@@ -90,7 +100,9 @@ class Util(object):
         if self.config.has_option(self.profile, config_key) and self.chars == None:
             self.chars = self.config.getint(self.profile, config_key)
         else:
-            if self.chars == None:
+            if self.chars == None and self.config.has_option(self.profile, 'chars'):
+                self.chars = self.config.getint(self.profile, 'chars')
+            else:
                 self.chars = 12
             self.config.set(self.profile, config_key, self.chars)
             self.writeconfig()
@@ -103,7 +115,9 @@ class Util(object):
         if self.config.has_option(self.profile, config_key) and self.pass_type == None:
             self.pass_type = self.config.getint(self.profile, config_key)
         else:
-            if self.pass_type == None:
+            if self.pass_type == None and self.config.has_option(self.profile, 'password_type'):
+                self.pass_type = self.config.getint(self.profile, 'password_type')
+            else:
                 self.pass_type = 1
             self.config.set(self.profile, config_key, self.pass_type)
             self.writeconfig()
