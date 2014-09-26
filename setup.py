@@ -13,6 +13,6 @@ setup(name='twik',
       license='GPLv3',
       packages=['twik'],
       entry_points = {
-          'console_scripts': ['twik = twik:main'],
+          'console_scripts': ['twik = twik.twik:main'],
       },
       )
