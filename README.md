@@ -20,7 +20,9 @@ cd Twik
 python setup.py install
 ```
 
+
 ## Usage instructions :
+
 
 
 ```
@@ -38,7 +40,8 @@ optional arguments:
   -t {1,2,3}, --passwordtype {1,2,3}
                         1 for ALPHANUMERIC_AND_SPECIAL_CHAR
                         2 for ALPHANUMERIC
-                        3 for NUMERIC Default: 1
+                        3 for NUMERIC
+                        Default: 1
 
 
 ```
