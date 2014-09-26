@@ -102,10 +102,12 @@ class Util(object):
         else:
             if self.chars == None and self.config.has_option(self.profile, 'chars'):
                 self.chars = self.config.getint(self.profile, 'chars')
-            else:
-                self.chars = 12
             self.config.set(self.profile, config_key, self.chars)
             self.writeconfig()
+
+        if self.chars < 4 or self.chars > 26:
+            print 'invalid password length value from configuration using default'
+            self.chars = 12
 
         return self.chars
 
@@ -117,10 +119,13 @@ class Util(object):
         else:
             if self.pass_type == None and self.config.has_option(self.profile, 'password_type'):
                 self.pass_type = self.config.getint(self.profile, 'password_type')
-            else:
-                self.pass_type = 1
+
             self.config.set(self.profile, config_key, self.pass_type)
             self.writeconfig()
+
+        if self.pass_type < 1 or self.pass_type > 3:
+            print 'invalid password type value from configuration using default'
+            self.pass_type = 1
 
         return self.pass_type
 
