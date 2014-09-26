@@ -99,44 +99,4 @@ class Twik(object):
         password = self.generatehash(mhash, master_key, length, password_type)
         return password
 
-def main():
-    """
-    ALPHANUMERIC_AND_SPECIAL_CHARS=1
-    ALPHANUMERIC=2
-    NUMERIC=3
-    """
-    parser = argparse.ArgumentParser()
-    parser.add_argument("tag", type=str,
-            help="generate password for a specified tag")
-    parser.add_argument("-c", "--chars", type=int, default=-1,
-            help="length of generated password [4-26]. Default: 12")
-    parser.add_argument("-p", "--profile", type=str, default='Profile',
-            help="profile to use. Default:'Profile'")
-    parser.add_argument("-t", "--passwordtype", type=int, choices=[1, 2, 3],
-            default=-1,
-            help='''
-            1 for ALPHANUMERIC_AND_SPECIAL_CHAR
-            2 for ALPHANUMERIC
-            3 for NUMERIC
-            Default: 1
-            ''')
-    args = parser.parse_args()
-
-    if args.chars > 26 or args.chars < 4:
-        print "Invalid password length [4-26]"
-        sys.exit(2)
-
-    util = Util(args.tag, args.chars, args.passwordtype, args.profile)
-
-    master_key = getpass.getpass(prompt='Master Key: ')
-
-    twik = Twik()
-    password = twik.getpassword(args.tag, util.get_privatekey(), master_key,
-            util.get_chars(), util.get_passord_type())
-
-    print "Your password is %s" % password
-
-if __name__ == "__main__":
-    main()
-
 # vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4

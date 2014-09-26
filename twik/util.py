@@ -87,10 +87,10 @@ class Util(object):
     def get_chars(self):
         config_key = '%s_chars' % self.tag
 
-        if self.config.has_option(self.profile, config_key) and self.chars == -1:
+        if self.config.has_option(self.profile, config_key) and self.chars == None:
             self.chars = self.config.getint(self.profile, config_key)
         else:
-            if self.chars == -1:
+            if self.chars == None:
                 self.chars = 12
             self.config.set(self.profile, config_key, self.chars)
             self.writeconfig()
@@ -100,10 +100,10 @@ class Util(object):
     def get_passord_type(self):
         config_key = '%s_password_type' % self.tag
 
-        if self.config.has_option(self.profile, config_key) and self.pass_type == -1:
+        if self.config.has_option(self.profile, config_key) and self.pass_type == None:
             self.pass_type = self.config.getint(self.profile, config_key)
         else:
-            if self.pass_type == -1:
+            if self.pass_type == None:
                 self.pass_type = 1
             self.config.set(self.profile, config_key, self.pass_type)
             self.writeconfig()

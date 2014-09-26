@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 import sys, os
 
-version = '0.3'
+version = '0.4'
 
 setup(name='twik',
       version=version,
@@ -13,6 +13,6 @@ setup(name='twik',
       license='GPLv3',
       packages=['twik'],
       entry_points = {
-          'console_scripts': ['twik = twik.twik:main'],
+          'console_scripts': ['twik = twik.run:main'],
       },
       )
