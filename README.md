@@ -51,11 +51,15 @@ Private Keys is stored in ~/.twik.conf you need change it to match with chrome e
 ```
 [Profile]
 private_key = TFCY2AJI-NBPU-V01E-F7CP-PJIZNRKPF25W
+chars = 8
+password_type = 1
 github_chars = 12
 github_password_type = 1
 
 [foobar]
 private_key = VBHF4HAR-8M5Z-NK3B-KQWH-KG9ZYLER4916
+chars = 22
+password_type = 1
 reddit_chars = 22
 reddit_password_type = 2
 ```
