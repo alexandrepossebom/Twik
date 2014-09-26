@@ -31,8 +31,8 @@ positional arguments:
 
 optional arguments:
   -h, --help            show this help message and exit
-  -c CHARS, --chars CHARS
-                        length of generated password. Default: 12
+  -c [4-26], --chars [4-26]
+                        length of generated password [4-26]. Default: 12
   -p PROFILE, --profile PROFILE
                         profile to use. Default:'Profile'
   -t {1,2,3}, --passwordtype {1,2,3}
