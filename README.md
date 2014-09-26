@@ -54,7 +54,7 @@ private_key = TFCY2AJI-NBPU-V01E-F7CP-PJIZNRKPF25W
 github_chars = 12
 github_password_type = 1
 
-[lala]
+[foobar]
 private_key = VBHF4HAR-8M5Z-NK3B-KQWH-KG9ZYLER4916
 reddit_chars = 22
 reddit_password_type = 2
