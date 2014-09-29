@@ -3,6 +3,8 @@ Twik
 
 Python version of Twik
 
+[![Build Status](https://travis-ci.org/coxande/Twik.svg?branch=master)](https://travis-ci.org/coxande/Twik)
+
 
 ## Installation instructions:
   * Using PIP
