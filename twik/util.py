@@ -92,6 +92,7 @@ class Util(object):
             self.config.set(self.profile, 'password_type', pass_type)
             self.writeconfig()
             print 'New profile is generated'
+            self.config.read(self.filename)
         return private_key
 
     def get_chars(self):
