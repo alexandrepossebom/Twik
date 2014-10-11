@@ -37,8 +37,8 @@ def main():
             choices=range(4, 27),
             metavar="[4-26]",
             help="length of generated password [4-26]. Default: 12")
-    parser.add_argument("-p", "--profile", type=str, default='Profile',
-            help="profile to use. Default:'Profile'")
+    parser.add_argument("-p", "--profile", type=str, default=None,
+            help="profile to use. Default:'Personal'")
     parser.add_argument("-t", "--passwordtype", type=int, choices=[1, 2, 3],
             help='''
             1 for ALPHANUMERIC_AND_SPECIAL_CHAR

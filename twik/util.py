@@ -76,10 +76,21 @@ class Util(object):
         Get private key if not exists create new one
         """
         private_key = ''
-        if self.config.has_option(self.profile, 'private_key'):
+        if self.profile == None and len(self.config.sections()) > 0:
+            for session in self.config.sections():
+                if self.config.has_option(session, 'default') and self.config.getboolean(session, 'default') == True:
+                    self.profile = session
+                    break
+            if self.profile == None:
+                self.profile = self.config.sections()[0]
+            print 'Using profile : %s' % self.profile
+
+        if self.profile and self.config.has_option(self.profile, 'private_key'):
             private_key = self.config.get(self.profile, 'private_key')
         else:
             private_key = privatekeygenerator()
+            if self.profile == None:
+                self.profile = 'Personal'
             self.config.add_section(self.profile)
             self.config.set(self.profile, 'private_key', private_key)
             chars = self.chars
@@ -90,6 +101,8 @@ class Util(object):
                 pass_type = 1
             self.config.set(self.profile, 'chars', chars)
             self.config.set(self.profile, 'password_type', pass_type)
+            if self.profile == 'Personal':
+                self.config.set(self.profile, 'default', 1)
             self.writeconfig()
             print 'New profile is generated'
             self.config.read(self.filename)

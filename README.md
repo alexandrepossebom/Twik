@@ -51,7 +51,7 @@ optional arguments:
 Private Keys is stored in ~/.twik.conf you need change it to match with chrome extension and android app:
 
 ```
-[Profile]
+[Personal]
 private_key = TFCY2AJI-NBPU-V01E-F7CP-PJIZNRKPF25W
 chars = 8
 password_type = 1
@@ -59,6 +59,8 @@ github_chars = 12
 github_password_type = 1
 
 [foobar]
+# for set foobar as default profile
+default = 1
 private_key = VBHF4HAR-8M5Z-NK3B-KQWH-KG9ZYLER4916
 chars = 22
 password_type = 1
