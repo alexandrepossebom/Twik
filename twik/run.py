@@ -50,7 +50,11 @@ def main():
 
     util = Util(args.tag, args.chars, args.passwordtype, args.profile)
 
-    master_key = getpass.getpass(prompt='Master Key: ')
+    try:
+        master_key = getpass.getpass(prompt='Master Key: ')
+    except KeyboardInterrupt:
+        print "^C"
+        raise SystemExit(0)
 
     twik = Twik()
     password = twik.getpassword(args.tag, util.get_privatekey(), master_key,
