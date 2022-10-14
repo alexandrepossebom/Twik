@@ -116,7 +116,7 @@ class Util(object):
         else:
             if self.chars == None and self.config.has_option(self.profile, 'chars'):
                 self.chars = self.config.getint(self.profile, 'chars')
-            self.config.set(self.profile, config_key, self.chars)
+            self.config.set(self.profile, config_key, str(self.chars))
             self.writeconfig()
 
         if self.chars < 4 or self.chars > 26:
@@ -134,7 +134,7 @@ class Util(object):
             if self.pass_type == None and self.config.has_option(self.profile, 'password_type'):
                 self.pass_type = self.config.getint(self.profile, 'password_type')
 
-            self.config.set(self.profile, config_key, self.pass_type)
+            self.config.set(self.profile, config_key, str(self.pass_type))
             self.writeconfig()
 
         if self.pass_type < 1 or self.pass_type > 3:
