@@ -25,7 +25,7 @@ along with Twik.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 import os.path
-import ConfigParser
+import configparser
 from random import SystemRandom
 
 def privatekeygenerator():
@@ -55,7 +55,7 @@ class Util(object):
         """
         homedir = os.path.expanduser('~')
         self.filename = os.path.join(homedir, '.twik.conf')
-        self.config = ConfigParser.ConfigParser()
+        self.config = configparser.ConfigParser()
         self.config.read(self.filename)
         self.tag = tag
         self.chars = chars
@@ -83,7 +83,7 @@ class Util(object):
                     break
             if self.profile == None:
                 self.profile = self.config.sections()[0]
-            print 'Using profile : %s' % self.profile
+            print('Using profile : %s' % self.profile)
 
         if self.profile and self.config.has_option(self.profile, 'private_key'):
             private_key = self.config.get(self.profile, 'private_key')
@@ -104,7 +104,7 @@ class Util(object):
             if self.profile == 'Personal':
                 self.config.set(self.profile, 'default', 1)
             self.writeconfig()
-            print 'New profile is generated'
+            print('New profile is generated')
             self.config.read(self.filename)
         return private_key
 
@@ -120,7 +120,7 @@ class Util(object):
             self.writeconfig()
 
         if self.chars < 4 or self.chars > 26:
-            print 'invalid password length value from configuration using default'
+            print('invalid password length value from configuration using default')
             self.chars = 12
 
         return self.chars
@@ -138,7 +138,7 @@ class Util(object):
             self.writeconfig()
 
         if self.pass_type < 1 or self.pass_type > 3:
-            print 'invalid password type value from configuration using default'
+            print('invalid password type value from configuration using default')
             self.pass_type = 1
 
         return self.pass_type
