@@ -25,12 +25,12 @@ along with Twik.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 from hashlib import sha1
-from util import Util
+from .util import Util
 import hmac
 import getpass
 import argparse
 import sys
-
+import base64
 
 class Twik(object):
     def injectcharacter(self, mhash, offset, reserved, seed, length, cstart, cnum):
@@ -67,8 +67,11 @@ class Twik(object):
         return "".join(inputchars)
 
     def generatehash(self, tag, key, length, password_type):
+        key=key.encode('utf-8')
+        tag=tag.encode('utf-8')
         digest = hmac.new(key, tag, sha1).digest()
-        mhash = digest.encode('base64')[:-2]
+        mhash = base64.standard_b64encode(digest)[:-1]
+        mhash = mhash.decode('utf-8')
 
         seed = 0
         for i in range(0, len(mhash)):

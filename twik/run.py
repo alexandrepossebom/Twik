@@ -18,8 +18,8 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Twik.  If not, see <http://www.gnu.org/licenses/>.
 """
-from util import Util
-from twik import Twik
+from .util import Util
+from .twik import Twik
 import getpass
 import argparse
 import sys
@@ -34,7 +34,7 @@ def main():
     parser.add_argument("tag", type=str,
             help="generate password for a specified tag")
     parser.add_argument("-c", "--chars", type=int,
-            choices=range(4, 27),
+            choices=list(range(4, 27)),
             metavar="[4-26]",
             help="length of generated password [4-26]. Default: 12")
     parser.add_argument("-p", "--profile", type=str, default=None,
@@ -53,16 +53,17 @@ def main():
     try:
         master_key = getpass.getpass(prompt='Master Key: ')
     except KeyboardInterrupt:
-        print "^C"
+        print("^C")
         raise SystemExit(0)
 
     twik = Twik()
     password = twik.getpassword(args.tag, util.get_privatekey(), master_key,
             util.get_chars(), util.get_passord_type())
 
-    print "Your password is %s" % password
+    print("Your password is %s" % password)
 
 if __name__ == "__main__":
     main()
 
 # vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4
+
