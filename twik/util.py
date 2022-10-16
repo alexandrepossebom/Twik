@@ -99,10 +99,10 @@ class Util(object):
             pass_type = self.pass_type
             if pass_type == None:
                 pass_type = 1
-            self.config.set(self.profile, 'chars', chars)
-            self.config.set(self.profile, 'password_type', pass_type)
+            self.config.set(self.profile, 'chars', str(chars))
+            self.config.set(self.profile, 'password_type', str(pass_type))
             if self.profile == 'Personal':
-                self.config.set(self.profile, 'default', 1)
+                self.config.set(self.profile, 'default', '1')
             self.writeconfig()
             print('New profile is generated')
             self.config.read(self.filename)
@@ -144,3 +144,4 @@ class Util(object):
         return self.pass_type
 
 # vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4
+
