@@ -1,6 +1,73 @@
+import os
+import os.path
+import tempfile
 import unittest
 from twik import twik
 from twik import util
+
+class ConfigPathTest(unittest.TestCase):
+    """
+    The configuration file holds the private key, so moving it to the XDG
+    path must never leave the old one behind: a missing file generates a new
+    private key and changes every password without warning.
+    """
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.environ = dict(os.environ)
+        os.environ['HOME'] = self.tmp.name
+        os.environ.pop('XDG_CONFIG_HOME', None)
+        self.legacy = os.path.join(self.tmp.name, '.twik.conf')
+        self.config = os.path.join(self.tmp.name, '.config', 'twik',
+                'twik.conf')
+
+    def writelegacy(self, private_key):
+        with open(self.legacy, 'w') as fileconfig:
+            fileconfig.write('[Personal]\nprivate_key = %s\ndefault = 1\n' %
+                    private_key)
+
+    def testDefaultPathIsUsedWithoutXdgVariable(self):
+        self.assertEqual(util.configpath(), self.config)
+
+    def testXdgVariableIsUsedWhenAbsolute(self):
+        os.environ['XDG_CONFIG_HOME'] = '/somewhere/config'
+        self.assertEqual(util.configpath(),
+                os.path.join('/somewhere/config', 'twik', 'twik.conf'))
+
+    def testRelativeXdgVariableIsIgnored(self):
+        os.environ['XDG_CONFIG_HOME'] = 'relative/config'
+        self.assertEqual(util.configpath(), self.config)
+
+    def testLegacyConfigIsMoved(self):
+        self.writelegacy('TFCY2AJI-NBPU-V01E-F7CP-PJIZNRKPF25W')
+        self.assertTrue(util.migrateconfig(self.legacy, self.config))
+        self.assertFalse(os.path.exists(self.legacy))
+        with open(self.config) as fileconfig:
+            self.assertIn('TFCY2AJI-NBPU-V01E-F7CP-PJIZNRKPF25W',
+                    fileconfig.read())
+
+    def testExistingConfigIsNotOverwritten(self):
+        self.writelegacy('LEGACY2A-NBPU-V01E-F7CP-PJIZNRKPF25W')
+        os.makedirs(os.path.dirname(self.config))
+        with open(self.config, 'w') as fileconfig:
+            fileconfig.write('[Personal]\nprivate_key = CURRENT\n')
+        self.assertFalse(util.migrateconfig(self.legacy, self.config))
+        self.assertTrue(os.path.exists(self.legacy))
+        with open(self.config) as fileconfig:
+            self.assertIn('CURRENT', fileconfig.read())
+
+    def testPrivateKeySurvivesMigration(self):
+        key = 'TFCY2AJI-NBPU-V01E-F7CP-PJIZNRKPF25W'
+        self.writelegacy(key)
+        self.assertEqual(util.Util('tag', 12, 1, None).get_privatekey(), key)
+
+    def testPrivateKeyIsKeptBetweenRuns(self):
+        key = util.Util('tag', 12, 1, None).get_privatekey()
+        self.assertEqual(util.Util('tag', 12, 1, None).get_privatekey(), key)
+
+    def tearDown(self):
+        os.environ.clear()
+        os.environ.update(self.environ)
+        self.tmp.cleanup()
 
 class SiteExtractionTest(unittest.TestCase):
     """

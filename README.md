@@ -48,7 +48,9 @@ optional arguments:
 
 ```
 
-Private Keys is stored in ~/.twik.conf you need change it to match with chrome extension and android app:
+Private Keys is stored in $XDG_CONFIG_HOME/twik/twik.conf, or in
+~/.config/twik/twik.conf when that variable is not set, you need change it to
+match with chrome extension and android app:
 
 ```
 [Personal]
@@ -67,4 +69,7 @@ password_type = 1
 reddit_chars = 22
 reddit_password_type = 2
 ```
+
+Older versions stored this file in ~/.twik.conf. It is moved to the path above
+on the first run, keeping your private keys and your passwords unchanged.
 

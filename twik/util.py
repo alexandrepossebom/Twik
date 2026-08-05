@@ -24,9 +24,11 @@ You should have received a copy of the GNU General Public License
 along with Twik.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+import os
 import os.path
 import configparser
 import re
+import shutil
 from random import SystemRandom
 from urllib.parse import urlparse
 
@@ -51,6 +53,35 @@ def extractsite(tag):
         return tag
     site = SITE_PATTERN.match(host)
     return site.group(1) if site else tag
+
+def configpath():
+    """
+    Path of the configuration file, following the XDG Base Directory
+    Specification. A relative $XDG_CONFIG_HOME is ignored, as the spec
+    requires, and $HOME/.config is used instead.
+    """
+    confighome = os.environ.get('XDG_CONFIG_HOME', '')
+    if not os.path.isabs(confighome):
+        confighome = os.path.join(os.path.expanduser('~'), '.config')
+    return os.path.join(confighome, 'twik', 'twik.conf')
+
+def legacyconfigpath():
+    """
+    Path of the configuration file used before the XDG one
+    """
+    return os.path.join(os.path.expanduser('~'), '.twik.conf')
+
+def migrateconfig(legacy, filename):
+    """
+    Move the configuration file from the legacy path to the XDG one and tell
+    whether it was moved. The private key lives in this file, so leaving it
+    behind would generate a new one and silently change every password.
+    """
+    if os.path.exists(filename) or not os.path.exists(legacy):
+        return False
+    os.makedirs(os.path.dirname(filename), exist_ok=True)
+    shutil.move(legacy, filename)
+    return True
 
 def privatekeygenerator():
     """
@@ -77,8 +108,9 @@ class Util(object):
         """
         Constructor
         """
-        homedir = os.path.expanduser('~')
-        self.filename = os.path.join(homedir, '.twik.conf')
+        self.filename = configpath()
+        if migrateconfig(legacyconfigpath(), self.filename):
+            print('Configuration moved to %s' % self.filename)
         self.config = configparser.ConfigParser()
         self.config.read(self.filename)
         self.tag = tag
@@ -92,6 +124,7 @@ class Util(object):
         """
         Write config file
         """
+        os.makedirs(os.path.dirname(self.filename), exist_ok=True)
         with open(self.filename, 'w+') as fileconfig:
             self.config.write(fileconfig)
 
