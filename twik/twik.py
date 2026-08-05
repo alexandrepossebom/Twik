@@ -67,16 +67,6 @@ class Twik(object):
         return "".join(inputchars)
 
     def generatehash(self, tag, key, length, password_type):
-        tag = tag.lower()
-        if tag.startswith('http://'):
-            tag = tag[7:]
-        elif tag.startswith('https://'):
-            tag = tag[8:]
-        if tag.startswith('www.'):
-            tag = tag[4:]
-        if tag.endswith('/'):
-            tag = tag[:-1]
-
         key=key.encode('utf-8')
         tag=tag.encode('utf-8')
         digest = hmac.new(key, tag, sha1).digest()

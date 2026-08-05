@@ -26,7 +26,31 @@ along with Twik.  If not, see <http://www.gnu.org/licenses/>.
 
 import os.path
 import configparser
+import re
 from random import SystemRandom
+from urllib.parse import urlparse
+
+"""
+Pattern used by the Android app to extract the site name from the host.
+Kept identical (ASCII only, as java.util.regex) so that both generate the
+same tag, and therefore the same password, for a given website.
+"""
+SITE_PATTERN = re.compile(r'^.*?([\w\d\-]+)\.((co|com|net|org|ac)\.)?\w+$',
+        re.ASCII)
+
+def extractsite(tag):
+    """
+    Extract the site name from an URL the same way the Android app does:
+    'https://www.example.com/' becomes 'example'. Tags which are not URLs
+    are returned unchanged.
+    """
+    if not tag.lower().startswith(('http://', 'https://')):
+        return tag
+    host = urlparse(tag).hostname
+    if host is None:
+        return tag
+    site = SITE_PATTERN.match(host)
+    return site.group(1) if site else tag
 
 def privatekeygenerator():
     """

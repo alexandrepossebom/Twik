@@ -18,7 +18,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Twik.  If not, see <http://www.gnu.org/licenses/>.
 """
-from .util import Util
+from .util import Util, extractsite
 from .twik import Twik
 import getpass
 import argparse
@@ -48,7 +48,11 @@ def main():
             ''')
     args = parser.parse_args()
 
-    util = Util(args.tag, args.chars, args.passwordtype, args.profile)
+    tag = extractsite(args.tag)
+    if tag != args.tag:
+        print('Using tag : %s' % tag)
+
+    util = Util(tag, args.chars, args.passwordtype, args.profile)
 
     try:
         master_key = getpass.getpass(prompt='Master Key: ')
@@ -57,7 +61,7 @@ def main():
         raise SystemExit(0)
 
     twik = Twik()
-    password = twik.getpassword(args.tag, util.get_privatekey(), master_key,
+    password = twik.getpassword(tag, util.get_privatekey(), master_key,
             util.get_chars(), util.get_passord_type())
 
     print("Your password is %s" % password)

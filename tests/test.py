@@ -1,5 +1,34 @@
 import unittest
 from twik import twik
+from twik import util
+
+class SiteExtractionTest(unittest.TestCase):
+    """
+    A website used as identifier must produce the same tag as the Android app,
+    which hashes only the site name: 'https://www.example.com/' -> 'example'
+    """
+    def testUrlIsReducedToSiteName(self):
+        self.assertEqual(util.extractsite('https://www.example.com/'),
+                'example')
+        self.assertEqual(util.extractsite('http://example.com'), 'example')
+        self.assertEqual(util.extractsite('https://mail.google.com'), 'google')
+        self.assertEqual(util.extractsite('https://www.google.co.uk/search?q=x'),
+                'google')
+        self.assertEqual(
+                util.extractsite('https://github.com/alexandrepossebom/Twik'),
+                'github')
+        self.assertEqual(util.extractsite('https://WWW.EXAMPLE.COM/'),
+                'example')
+
+    def testTagWithoutSchemeIsNotModified(self):
+        self.assertEqual(util.extractsite('tag'), 'tag')
+        self.assertEqual(util.extractsite('example.com'), 'example.com')
+        self.assertEqual(util.extractsite('my.mail'), 'my.mail')
+
+    def testUrlWithoutSiteNameIsNotModified(self):
+        self.assertEqual(util.extractsite('http://localhost:8080/'),
+                'http://localhost:8080/')
+        self.assertEqual(util.extractsite('https://'), 'https://')
 
 class SimpleTest(unittest.TestCase):
     def setUp(self):
@@ -56,6 +85,15 @@ class SimpleTest(unittest.TestCase):
             password = self.t.getpassword('tag',
                 'TFCY2AJI-NBPU-V01E-F7CP-PJIZNRKPF25W', 'foobar', chars, 1)
             self.assertEqual(len(password), chars)
+
+    def testUrlAndSiteNameGiveSamePassword(self):
+        key = 'TFCY2AJI-NBPU-V01E-F7CP-PJIZNRKPF25W'
+        expected = self.t.getpassword('example', key, 'foobar', 12, 1)
+        for url in ['https://www.example.com/', 'http://example.com',
+                'https://example.com/login?next=/']:
+            password = self.t.getpassword(util.extractsite(url), key, 'foobar',
+                    12, 1)
+            self.assertEqual(password, expected)
 
     def testSizeWrong(self):
         password = self.t.getpassword('tag',
